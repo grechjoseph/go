@@ -72,15 +72,11 @@ public class IpAddressServiceImpl implements IpAddressService {
         ipAddress.setResourceState(RESERVED);
         final IpPool ipPool = ipPoolRepository.findById(poolId).orElseThrow(() -> new BaseException(IP_POOL_NOT_FOUND));
 
-        final IPv4Address iPv4Address = IPUtils.fromString(ipAddress.getValue());
-        final IPv4Address lowerBound = IPUtils.fromString(ipPool.getLowerBound());
-        final IPv4Address upperBound = IPUtils.fromString(ipPool.getUpperBound());
-
         if(ipPool.getAvailableCapacity() < 1) {
             throw new BaseException(IP_POOL_EXHAUSTED);
         }
 
-        if (!IPUtils.isInRange(iPv4Address, lowerBound, upperBound)) {
+        if(!ipAddressInPoolRange(ipPool, ipAddress.getValue())) {
             throw new BaseException(IP_ADDRESS_NOT_IN_RANGE);
         }
 
@@ -96,20 +92,36 @@ public class IpAddressServiceImpl implements IpAddressService {
     }
 
     @Override
-    public IpAddress blacklistIpAddress(final IpAddress ipAddress) {
-        Optional<IpAddress> optionalIpAddress = ipAddressRepository.findByValue(ipAddress.getValue());
+    public IpAddress blacklistIpAddress(final UUID poolId, final String ipAddress) {
+        Optional<IpAddress> optionalIpAddress = ipAddressRepository.findByValue(ipAddress);
 
         optionalIpAddress.ifPresent(foundIpAddress -> {
             throw new BaseException(foundIpAddress.getResourceState().equals(RESERVED) ? IP_ADDRESS_IN_USE : IP_ADDRESS_BLACKLISTED);
         });
 
-        return transitState(ipAddress, BLACKLISTED);
+        final IpPool ipPool = ipPoolRepository.findById(poolId).orElseThrow(() -> new BaseException(IP_POOL_NOT_FOUND));
+
+        if(!ipAddressInPoolRange(ipPool, ipAddress)) {
+            throw new BaseException(IP_ADDRESS_NOT_IN_RANGE);
+        }
+
+        final IpAddress ipAddressToBlacklist = new IpAddress();
+        ipAddressToBlacklist.setValue(ipAddress);
+        ipAddressToBlacklist.setIpPool(ipPool);
+
+        return transitState(ipAddressToBlacklist, BLACKLISTED);
     }
 
     @Override
-    public void freeIpAddress(final UUID ipAddressId) {
-        final IpAddress ipAddress = getIpAddressById(ipAddressId);
-        ipAddressRepository.delete(ipAddress);
+    public void freeIpAddress(final UUID poolId, final String ipAddress) {
+        final IpPool ipPool = ipPoolRepository.findById(poolId).orElseThrow(() -> new BaseException(IP_POOL_NOT_FOUND));
+
+        if(!ipAddressInPoolRange(ipPool, ipAddress)) {
+            throw new BaseException(IP_ADDRESS_NOT_IN_RANGE);
+        }
+
+        final IpAddress ipAddressToFree = getIpAddressByValue(ipAddress);
+        ipAddressRepository.delete(ipAddressToFree);
     }
 
     @Override
@@ -127,6 +139,14 @@ public class IpAddressServiceImpl implements IpAddressService {
         if(!ipAddress.getResourceState().getNextSteps().contains(newState)) {
             throw new BaseException(IP_ADDRESS_INVALID_STATE_TRANSITION);
         }
+    }
+
+    private boolean ipAddressInPoolRange(final IpPool ipPool, final String value) {
+        final IPv4Address iPv4Address = IPUtils.fromString(value);
+        final IPv4Address lowerBound = IPUtils.fromString(ipPool.getLowerBound());
+        final IPv4Address upperBound = IPUtils.fromString(ipPool.getUpperBound());
+
+        return IPUtils.isInRange(iPv4Address, lowerBound, upperBound);
     }
 
 }

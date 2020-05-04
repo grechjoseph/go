@@ -46,16 +46,16 @@ public class IpAddressController {
         return mapper.map(ipAddressService.getIpAddressById(addressId), ApiIpAddress.class);
     }
 
-    @DeleteMapping("/ip-addresses")
+    @DeleteMapping("/ip-pools/{poolId}/ip-addresses")
     @ApiOperation(value = "Blacklist an IP Address.")
-    public ApiIpAddress blacklistIpAddress(@RequestBody final ApiIpAddress ipAddress) {
-        return mapper.map(ipAddressService.blacklistIpAddress(mapper.map(ipAddress, IpAddress.class)), ApiIpAddress.class);
+    public ApiIpAddress blacklistIpAddress(@PathVariable final UUID poolId, @RequestParam final String ipAddress) {
+        return mapper.map(ipAddressService.blacklistIpAddress(poolId, ipAddress), ApiIpAddress.class);
     }
 
-    @PatchMapping("/ip-addresses/{addressId}")
-    @ApiOperation(value = "Free an IP Address by its ID.")
-    public void freeIpAddress(@PathVariable final UUID addressId) {
-        ipAddressService.freeIpAddress(addressId);
+    @PatchMapping("/ip-pools/{poolId}")
+    @ApiOperation(value = "Free an IP Address from a pool.")
+    public void freeIpAddress(@PathVariable final UUID poolId, @RequestParam final String ipAddress) {
+        ipAddressService.freeIpAddress(poolId, ipAddress);
     }
 
 }

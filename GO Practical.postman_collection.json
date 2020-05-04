@@ -1,0 +1,137 @@
+{
+	"info": {
+		"_postman_id": "694e665c-ae72-4080-b7f8-88e123ed7cba",
+		"name": "GO Practical",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Dynamic IPs",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/ip-addresses?quantity=1000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"ip-addresses"
+					],
+					"query": [
+						{
+							"key": "quantity",
+							"value": "1000"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Free IP",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/ip-pools/f75985fb-ba1b-4f05-8689-1d80606f702e?ipAddress=10.50.15.210",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"ip-pools",
+						"f75985fb-ba1b-4f05-8689-1d80606f702e"
+					],
+					"query": [
+						{
+							"key": "ipAddress",
+							"value": "10.50.15.210"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Static IP",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"value\":\"10.70.26.7\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/ip-pools/94bb2d8d-14a7-4d7b-9e89-fe2e448fc9b4/ip-addresses",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"ip-pools",
+						"94bb2d8d-14a7-4d7b-9e89-fe2e448fc9b4",
+						"ip-addresses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get IP by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/ip-addresses/ffab1aae-477c-4eac-b87d-5bca4c895f23",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"ip-addresses",
+						"ffab1aae-477c-4eac-b87d-5bca4c895f23"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Blacklist IP Address",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/ip-pools/f75985fb-ba1b-4f05-8689-1d80606f702e/ip-addresses?ipAddress=10.50.200.210",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"ip-pools",
+						"f75985fb-ba1b-4f05-8689-1d80606f702e",
+						"ip-addresses"
+					],
+					"query": [
+						{
+							"key": "ipAddress",
+							"value": "10.50.200.210"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

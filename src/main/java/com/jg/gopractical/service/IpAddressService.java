@@ -13,9 +13,9 @@ public interface IpAddressService {
 
     IpAddress reserveIpAddress(final UUID poolId, final IpAddress ipAddress);
 
-    IpAddress blacklistIpAddress(final IpAddress ipAddress);
+    IpAddress blacklistIpAddress(final UUID poolId, final String ipAddress);
 
-    void freeIpAddress(final UUID ipAddressId);
+    void freeIpAddress(final UUID poolId, final String ipAddress);
 
     IpAddress getIpAddressByValue(String ipAddress);
 }

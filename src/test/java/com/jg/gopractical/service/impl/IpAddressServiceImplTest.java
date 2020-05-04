@@ -34,6 +34,7 @@ public class IpAddressServiceImplTest {
     private static String LOWER_BOUND = "0.0.0.0";
     private static String UPPER_BOUND = "0.0.0." + QUANTITY;
     private static IpAddress IP_ADDRESS_OBJ = new IpAddress();
+    private static UUID POOL_ID = UUID.randomUUID();
 
     @Mock
     private IpPoolRepository mockIpPoolRepository;
@@ -52,6 +53,7 @@ public class IpAddressServiceImplTest {
         IP_ADDRESS_OBJ.setValue(LOWER_BOUND);
         when(mockIpPool.getUpperBound()).thenReturn(UPPER_BOUND);
         when(mockIpPool.getLowerBound()).thenReturn(LOWER_BOUND);
+        when(mockIpPool.getId()).thenReturn(POOL_ID);
         when(mockIpPoolRepository.findBySupportDynamicIsTrue()).thenReturn(Optional.of(mockIpPool));
         when(mockIpPoolRepository.findById(any(UUID.class))).thenReturn(Optional.of(mockIpPool));
         when(mockIpAddressRepository.saveAll(any(List.class))).thenAnswer((Answer) invocation -> invocation.getArguments()[0]);
@@ -129,8 +131,8 @@ public class IpAddressServiceImplTest {
 
     @Test
     public void blacklistIpAddress_noExist_shouldCreateBlacklistedIp() {
-        final IpAddress ipAddress = ipAddressService.blacklistIpAddress(IP_ADDRESS_OBJ);
-        verify(mockIpAddressRepository).save(IP_ADDRESS_OBJ);
+        final IpAddress ipAddress = ipAddressService.blacklistIpAddress(mockIpPool.getId(), IP_ADDRESS_OBJ.getValue());
+        verify(mockIpAddressRepository).save(any(IpAddress.class));
         assertThat(ipAddress.getResourceState()).isEqualTo(BLACKLISTED);
     }
 
@@ -139,7 +141,7 @@ public class IpAddressServiceImplTest {
         final IpAddress ipAddressObj = new IpAddress();
         ipAddressObj.setResourceState(RESERVED);
         when(mockIpAddressRepository.findByValue(any(String.class))).thenReturn(Optional.of(ipAddressObj));
-        assertThatThrownBy(() -> ipAddressService.blacklistIpAddress(IP_ADDRESS_OBJ))
+        assertThatThrownBy(() -> ipAddressService.blacklistIpAddress(mockIpPool.getId(), IP_ADDRESS_OBJ.getValue()))
                 .isEqualTo(new BaseException(IP_ADDRESS_IN_USE));
         verify(mockIpAddressRepository, never()).save(any(IpAddress.class));
     }
@@ -149,23 +151,23 @@ public class IpAddressServiceImplTest {
         final IpAddress ipAddressObj = new IpAddress();
         ipAddressObj.setResourceState(BLACKLISTED);
         when(mockIpAddressRepository.findByValue(any(String.class))).thenReturn(Optional.of(ipAddressObj));
-        assertThatThrownBy(() -> ipAddressService.blacklistIpAddress(IP_ADDRESS_OBJ))
+        assertThatThrownBy(() -> ipAddressService.blacklistIpAddress(mockIpPool.getId(), IP_ADDRESS_OBJ.getValue()))
                 .isEqualTo(new BaseException(IP_ADDRESS_BLACKLISTED));
         verify(mockIpAddressRepository, never()).save(any(IpAddress.class));
     }
 
     @Test
     public void freeIpAddress_isReserved_shouldDeleteIpAddress() {
-        when(mockIpAddressRepository.findById(any(UUID.class))).thenReturn(Optional.of(IP_ADDRESS_OBJ));
-        ipAddressService.freeIpAddress(UUID.randomUUID());
+        when(mockIpAddressRepository.findByValue(any(String.class))).thenReturn(Optional.of(IP_ADDRESS_OBJ));
+        ipAddressService.freeIpAddress(mockIpPool.getId(), IP_ADDRESS_OBJ.getValue());
         verify(mockIpAddressRepository).delete(IP_ADDRESS_OBJ);
     }
 
     @Test
     public void freeIpAddress_isBlacklisted_shouldDeleteIpAddress() {
         IP_ADDRESS_OBJ.setResourceState(BLACKLISTED);
-        when(mockIpAddressRepository.findById(any(UUID.class))).thenReturn(Optional.of(IP_ADDRESS_OBJ));
-        ipAddressService.freeIpAddress(UUID.randomUUID());
+        when(mockIpAddressRepository.findByValue(any(String.class))).thenReturn(Optional.of(IP_ADDRESS_OBJ));
+        ipAddressService.freeIpAddress(mockIpPool.getId(), IP_ADDRESS_OBJ.getValue());
         verify(mockIpAddressRepository).delete(IP_ADDRESS_OBJ);
     }
 
