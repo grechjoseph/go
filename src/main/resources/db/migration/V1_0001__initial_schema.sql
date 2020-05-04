@@ -4,7 +4,8 @@ create table if not exists go.ip_pool (
     id uuid primary key,
     description text not null,
     lower_bound varchar(25) not null,
-    upper_bound varchar(25) not null
+    upper_bound varchar(25) not null,
+    support_dynamic boolean not null
 );
 
 create table if not exists go.ip_address (

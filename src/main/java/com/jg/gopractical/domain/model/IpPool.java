@@ -26,6 +26,8 @@ public class IpPool {
 
     private IPAddress upperBound;
 
+    private boolean supportDynamic;
+
     @OneToMany(cascade = ALL)
     @JoinColumn(name = "ip_pool_id")
     private Set<IpAddress> ipAddresses;

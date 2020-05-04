@@ -30,6 +30,9 @@ public class IpAddress {
     @Enumerated(EnumType.STRING)
     private IpState resourceState;
 
+    @Transient
+    private boolean dynamic;
+
     @SneakyThrows
     public void setValue(final String value) {
         this.value = fromString(value);

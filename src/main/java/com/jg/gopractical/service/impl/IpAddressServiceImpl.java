@@ -3,7 +3,9 @@ package com.jg.gopractical.service.impl;
 import com.jg.gopractical.domain.enums.IpState;
 import com.jg.gopractical.domain.model.IpAddress;
 import com.jg.gopractical.domain.repository.IpAddressRepository;
+import com.jg.gopractical.domain.repository.IpPoolRepository;
 import com.jg.gopractical.service.IpAddressService;
+import com.jg.gopractical.service.IpPoolService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,7 @@ import static com.jg.gopractical.domain.enums.IpState.*;
 public class IpAddressServiceImpl implements IpAddressService {
 
     private final IpAddressRepository ipAddressRepository;
+    private final IpPoolRepository ipPoolRepository;
 
     @Override
     public IpAddress getIpAddressById(final UUID ipAddressId) {
@@ -30,7 +33,12 @@ public class IpAddressServiceImpl implements IpAddressService {
 
     @Override
     public IpAddress reserveIpAddress(final IpAddress ipAddress) {
-        return transitState(ipAddress, RESERVED);
+        if(ipAddress.isDynamic()) {
+            ipAddress.setIpPool(ipPoolRepository.findById());
+        }
+
+
+        return ipAddressRepository.save(ipAddress);
     }
 
     @Override
