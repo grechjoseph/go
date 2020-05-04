@@ -100,9 +100,7 @@ public class IpAddressServiceImpl implements IpAddressService {
         Optional<IpAddress> optionalIpAddress = ipAddressRepository.findByValue(ipAddress.getValue());
 
         optionalIpAddress.ifPresent(foundIpAddress -> {
-            if(foundIpAddress.getResourceState().equals(RESERVED)) {
-                throw new BaseException(IP_ADDRESS_IN_USE);
-            }
+            throw new BaseException(foundIpAddress.getResourceState().equals(RESERVED) ? IP_ADDRESS_IN_USE : IP_ADDRESS_BLACKLISTED);
         });
 
         return transitState(ipAddress, BLACKLISTED);
