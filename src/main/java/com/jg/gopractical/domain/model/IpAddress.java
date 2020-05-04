@@ -7,7 +7,6 @@ import lombok.SneakyThrows;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import java.net.InetAddress;
 import java.util.UUID;
 
 import static javax.persistence.FetchType.LAZY;

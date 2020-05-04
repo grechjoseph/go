@@ -1,12 +1,10 @@
 package com.jg.gopractical.domain.model;
 
 import inet.ipaddr.IPAddress;
-import inet.ipaddr.ipv4.IPv4Address;
 import lombok.Data;
 import lombok.SneakyThrows;
 
 import javax.persistence.*;
-import java.net.InetAddress;
 import java.util.Set;
 import java.util.UUID;
 
@@ -25,7 +23,7 @@ public class IpPool {
 
     private IPAddress upperBound;
 
-    @OneToOne(cascade = ALL)
+    @OneToMany(cascade = ALL)
     @JoinColumn(name = "ip_pool_id")
     private Set<IpAddress> ipAddresses;
 

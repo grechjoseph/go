@@ -9,7 +9,7 @@ create table if not exists go.ip_pool (
 
 create table if not exists go.ip_address (
     id uuid primary key,
-    ip_pool_id uuid references go.ip_pool(id) not null,
+    ip_pool_id uuid references go.ip_pool(id),
     value varchar(25) not null,
     resource_state varchar(25) not null
 );
