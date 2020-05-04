@@ -13,8 +13,9 @@ public class ApiIpAddressExtended extends ApiIpAddress {
     public ApiIpAddressExtended(final UUID id,
                                 final UUID ipPoolId,
                                 final String value,
-                                final IpState ipState) {
-        super(ipPoolId, value, ipState);
+                                final IpState ipState,
+                                final boolean dynamic) {
+        super(ipPoolId, value, ipState, dynamic);
         this.id = id;
     }
 }

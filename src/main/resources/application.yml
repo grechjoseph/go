@@ -29,3 +29,9 @@ spring:
   profiles: dummy-data
   flyway:
     locations: classpath:/db/migration,classpath:/db/dummy-data
+
+---
+spring:
+  profiles: test
+  flyway:
+    enabled: false

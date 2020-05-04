@@ -1,8 +1,12 @@
 package com.jg.gopractical.domain.model;
 
+import inet.ipaddr.IPAddress;
+import inet.ipaddr.ipv4.IPv4Address;
 import lombok.Data;
+import lombok.SneakyThrows;
 
 import javax.persistence.*;
+import java.net.InetAddress;
 import java.util.Set;
 import java.util.UUID;
 
@@ -17,9 +21,9 @@ public class IpPool {
 
     private String description;
 
-    private Integer lowerBound;
+    private IPAddress lowerBound;
 
-    private Integer upperBound;
+    private IPAddress upperBound;
 
     @OneToOne(cascade = ALL)
     @JoinColumn(name = "ip_pool_id")
@@ -27,12 +31,23 @@ public class IpPool {
 
     @Transient
     public Integer getTotalCapacity() {
-        return upperBound - lowerBound;
+        return upperBound.subtract(lowerBound).length;
     }
 
     @Transient
     public Integer getUsedCapacity() {
         return ipAddresses.size();
     }
+
+    @SneakyThrows
+    public void setLowerBound(final String lowerBound) {
+        this.lowerBound = IPAddress.from(lowerBound.getBytes());
+    }
+
+    @SneakyThrows
+    public void setUpperBound(final String upperBound) {
+        this.upperBound = IPAddress.from(upperBound.getBytes());
+    }
+
 
 }

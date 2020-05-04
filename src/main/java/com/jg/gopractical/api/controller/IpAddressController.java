@@ -44,7 +44,7 @@ public class IpAddressController {
         return mapper.map(ipAddressService.blacklistIpAddress(addressIp), ApiIpAddressExtended.class);
     }
 
-    @PatchMapping("/")
+    //@PatchMapping("/")
 
 
 

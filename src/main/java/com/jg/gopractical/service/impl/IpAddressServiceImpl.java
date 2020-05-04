@@ -47,12 +47,12 @@ public class IpAddressServiceImpl implements IpAddressService {
         return null;
     }
 
-    private IpAddress transitState(final String ipAddress, final IpState newState) {
+    /*private IpAddress transitState(final String ipAddress, final IpState newState) {
         final IpAddress ipAddress = getIpAddressById(ipAddressId);
         validateStateTransition(ipAddress, newState);
         ipAddress.setResourceState(newState);
         return ipAddressRepository.save(ipAddress);
-    }
+    }*/
 
     private void validateStateTransition(final IpAddress ipAddress, final IpState newState) {
         if(!ipAddress.getResourceState().getNextSteps().contains(newState)) {
