@@ -32,7 +32,4 @@ public class IpAddress {
     @Enumerated(EnumType.STRING)
     private IpState resourceState = FREE;
 
-    @Transient
-    private boolean dynamic;
-
 }
