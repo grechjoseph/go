@@ -6,7 +6,7 @@ public class IPUtils {
 
     public static IPv4Address fromString(final String value) {
         int[] ip = new int[4];
-        String[] parts = "127.0.0.0".split("\\.");
+        String[] parts = value.split("\\.");
 
         for (int i = 0; i < 4; i++) {
             ip[i] = Integer.parseInt(parts[i]);

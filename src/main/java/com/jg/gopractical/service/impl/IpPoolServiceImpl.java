@@ -15,7 +15,7 @@ public class IpPoolServiceImpl implements IpPoolService {
 
     @Override
     public IpPool createIpPool(final IpPool ipPool) {
-        return null;
+        return ipPoolRepository.save(ipPool);
     }
 
     @Override
