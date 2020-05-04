@@ -1,6 +1,7 @@
 package com.jg.gopractical.service.impl;
 
 import com.jg.gopractical.domain.enums.IpState;
+import com.jg.gopractical.domain.exception.BaseException;
 import com.jg.gopractical.domain.model.IpAddress;
 import com.jg.gopractical.domain.model.IpPool;
 import com.jg.gopractical.domain.repository.IpAddressRepository;
@@ -13,10 +14,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.jg.gopractical.domain.enums.IpState.BLACKLISTED;
 import static com.jg.gopractical.domain.enums.IpState.RESERVED;
+import static com.jg.gopractical.domain.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -35,11 +38,11 @@ public class IpAddressServiceImpl implements IpAddressService {
         final IpPool dynamicIpPool = ipPoolRepository.findBySupportDynamicIsTrue().orElseThrow(() -> new RuntimeException("Pool not found."));
 
         if(dynamicIpPool.getAvailableCapacity() < quantity) {
-            throw new IllegalArgumentException("Insufficient addresses available.");
+            throw new BaseException(IP_POOL_EXHAUSTED);
         }
 
         final List<IpAddress> generatedAddresses = new ArrayList<>();
-        Integer last = IPUtils.getIpNumbers(dynamicIpPool.getLowerBound());
+        int last = IPUtils.getIpNumbers(dynamicIpPool.getLowerBound());
 
         for (int i = 0; i < quantity; i++) {
             final int upper = IPUtils.getIpNumbers(dynamicIpPool.getUpperBound());
@@ -67,18 +70,25 @@ public class IpAddressServiceImpl implements IpAddressService {
     @Override
     public IpAddress reserveIpAddress(final UUID poolId, final IpAddress ipAddress) {
         ipAddress.setResourceState(RESERVED);
-        final IpPool ipPool = ipPoolRepository.findById(poolId).orElseThrow(() -> new RuntimeException("Pool not found."));
+        final IpPool ipPool = ipPoolRepository.findById(poolId).orElseThrow(() -> new BaseException(IP_POOL_NOT_FOUND));
 
         final IPv4Address iPv4Address = IPUtils.fromString(ipAddress.getValue());
         final IPv4Address lowerBound = IPUtils.fromString(ipPool.getLowerBound());
         final IPv4Address upperBound = IPUtils.fromString(ipPool.getUpperBound());
 
+        if(ipPool.getAvailableCapacity() < 1) {
+            throw new BaseException(IP_POOL_EXHAUSTED);
+        }
+
         if (!IPUtils.isInRange(iPv4Address, lowerBound, upperBound)) {
-            throw new IllegalArgumentException("IP provided is not in range.");
+            throw new BaseException(IP_ADDRESS_NOT_IN_RANGE);
         }
 
         if (ipAddressRepository.findByValue(ipAddress.getValue()).isPresent()) {
-            throw new IllegalArgumentException("IP is not available");
+            if(ipAddressRepository.findByValue(ipAddress.getValue()).get().getResourceState().equals(BLACKLISTED)){
+                throw new BaseException(IP_ADDRESS_BLACKLISTED);
+            }
+            throw new BaseException(IP_ADDRESS_NOT_AVAILABLE);
         }
 
         ipAddress.setIpPool(ipPool);
@@ -87,7 +97,15 @@ public class IpAddressServiceImpl implements IpAddressService {
 
     @Override
     public IpAddress blacklistIpAddress(final IpAddress ipAddress) {
-        return transitState(ipAddressRepository.save(ipAddress), BLACKLISTED);
+        Optional<IpAddress> optionalIpAddress = ipAddressRepository.findByValue(ipAddress.getValue());
+
+        optionalIpAddress.ifPresent(foundIpAddress -> {
+            if(foundIpAddress.getResourceState().equals(RESERVED)) {
+                throw new BaseException(IP_ADDRESS_IN_USE);
+            }
+        });
+
+        return transitState(ipAddress, BLACKLISTED);
     }
 
     @Override
@@ -98,7 +116,7 @@ public class IpAddressServiceImpl implements IpAddressService {
 
     @Override
     public IpAddress getIpAddressByValue(final String ipAddress) {
-        return ipAddressRepository.findByValue(ipAddress).orElseThrow(() -> new IllegalArgumentException("IP not found."));
+        return ipAddressRepository.findByValue(ipAddress).orElseThrow(() -> new BaseException(IP_ADDRESS_NOT_FOUND));
     }
 
     private IpAddress transitState(final IpAddress ipAddress, final IpState newState) {
@@ -109,7 +127,7 @@ public class IpAddressServiceImpl implements IpAddressService {
 
     private void validateStateTransition(final IpAddress ipAddress, final IpState newState) {
         if(!ipAddress.getResourceState().getNextSteps().contains(newState)) {
-            throw new IllegalArgumentException("Invalid State transition.");
+            throw new BaseException(IP_ADDRESS_INVALID_STATE_TRANSITION);
         }
     }
 

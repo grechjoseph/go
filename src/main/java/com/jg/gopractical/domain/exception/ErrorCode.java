@@ -1,0 +1,14 @@
+package com.jg.gopractical.domain.exception;
+
+public enum ErrorCode {
+
+    IP_ADDRESS_NOT_IN_RANGE,
+    IP_ADDRESS_NOT_AVAILABLE,
+    IP_ADDRESS_BLACKLISTED,
+    IP_ADDRESS_IN_USE,
+    IP_ADDRESS_INVALID_STATE_TRANSITION,
+    IP_ADDRESS_NOT_FOUND,
+    IP_POOL_NOT_FOUND,
+    IP_POOL_EXHAUSTED
+
+}
