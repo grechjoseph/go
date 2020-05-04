@@ -4,8 +4,12 @@ import com.jg.gopractical.domain.model.IpAddress;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface IpAddressRepository extends JpaRepository<IpAddress, UUID> {
+
+    Optional<IpAddress> findByValue(final String value);
+
 }

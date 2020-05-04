@@ -1,20 +1,22 @@
 package com.jg.gopractical.domain.model;
 
 import com.jg.gopractical.domain.enums.IpState;
-import inet.ipaddr.IPAddress;
 import lombok.Data;
-import lombok.SneakyThrows;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.util.UUID;
 
-import static com.jg.gopractical.utils.IPUtils.fromString;
+import static com.jg.gopractical.domain.enums.IpState.FREE;
 import static javax.persistence.FetchType.LAZY;
 
 @Data
 @Entity
 @Table(name = "ip_address")
+@ToString(exclude = "ipPool")
+@EqualsAndHashCode(exclude = "ipPool")
 public class IpAddress {
 
     @Id
@@ -25,17 +27,12 @@ public class IpAddress {
     private IpPool ipPool;
 
     @NotEmpty
-    private IPAddress value;
+    private String value;
 
     @Enumerated(EnumType.STRING)
-    private IpState resourceState;
+    private IpState resourceState = FREE;
 
     @Transient
     private boolean dynamic;
-
-    @SneakyThrows
-    public void setValue(final String value) {
-        this.value = fromString(value);
-    }
 
 }

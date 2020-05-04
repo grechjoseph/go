@@ -1,5 +1,7 @@
 package com.jg.gopractical.mapper;
 
+import com.jg.gopractical.api.dto.ApiIpAddress;
+import com.jg.gopractical.domain.model.IpAddress;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import ma.glasnost.orika.MapperFactory;
@@ -24,11 +26,12 @@ public class ModelMapper extends ConfigurableMapper {
     }
 
     private void registerClassMaps() {
-        /*
-        mapperFactory.registerClassMap(mapperFactory.classMap(OrderEntry.class, ApiOrderEntryExtended.class)
-                .field("book.id", "bookId")
+        mapperFactory.registerClassMap(mapperFactory.classMap(IpAddress.class, ApiIpAddress.class)
+                .field("ipPool.id", "ipPoolId")
+                .exclude("dynamic")
+                .exclude("resourceState")
+                .exclude("id")
                 .byDefault()
                 .toClassMap());
-         */
     }
 }

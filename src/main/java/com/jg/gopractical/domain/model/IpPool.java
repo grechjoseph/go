@@ -1,16 +1,14 @@
 package com.jg.gopractical.domain.model;
 
 import com.jg.gopractical.utils.IPUtils;
-import inet.ipaddr.IPAddress;
 import inet.ipaddr.ipv4.IPv4Address;
 import lombok.Data;
-import lombok.SneakyThrows;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.util.Set;
 import java.util.UUID;
 
-import static com.jg.gopractical.utils.IPUtils.fromString;
 import static javax.persistence.CascadeType.ALL;
 
 @Data
@@ -22,9 +20,11 @@ public class IpPool {
 
     private String description;
 
-    private IPAddress lowerBound;
+    @NotEmpty
+    private String lowerBound;
 
-    private IPAddress upperBound;
+    @NotEmpty
+    private String upperBound;
 
     private boolean supportDynamic;
 
@@ -34,7 +34,9 @@ public class IpPool {
 
     @Transient
     public Integer getTotalCapacity() {
-        return upperBound.subtract(lowerBound).length;
+        final IPv4Address upper = IPUtils.fromString(upperBound);
+        final IPv4Address lower = IPUtils.fromString(lowerBound);
+        return IPUtils.getDifference(upper, lower) + 1;
     }
 
     @Transient
@@ -42,15 +44,9 @@ public class IpPool {
         return ipAddresses.size();
     }
 
-    @SneakyThrows
-    public void setLowerBound(final String lowerBound) {
-        this.lowerBound = fromString(lowerBound);
+    @Transient
+    public Integer getAvailableCapacity() {
+        return getTotalCapacity() - getUsedCapacity();
     }
-
-    @SneakyThrows
-    public void setUpperBound(final String upperBound) {
-        this.upperBound = fromString(upperBound);
-    }
-
 
 }

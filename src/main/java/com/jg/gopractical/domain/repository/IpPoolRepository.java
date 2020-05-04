@@ -10,6 +10,6 @@ import java.util.UUID;
 @Repository
 public interface IpPoolRepository extends JpaRepository<IpPool, UUID> {
 
-    Optional<IpPool> findOneBySupportDynamicIsTrue();
+    Optional<IpPool> findBySupportDynamicIsTrue();
 
 }

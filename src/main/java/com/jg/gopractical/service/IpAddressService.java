@@ -9,14 +9,13 @@ public interface IpAddressService {
 
     IpAddress getIpAddressById(final UUID ipAddressId);
 
-    List<IpAddress> getIpAddresses();
+    List<IpAddress> reserveDynamicIpAddress(final Integer quantity);
 
-    IpAddress reserveIpAddress(final IpAddress ipAddress);
-
-    IpAddress blacklistIpAddress(final UUID ipAddressId);
+    IpAddress reserveIpAddress(final UUID poolId, final IpAddress ipAddress);
 
     IpAddress blacklistIpAddress(final IpAddress ipAddress);
 
     void freeIpAddress(final UUID ipAddressId);
 
+    IpAddress getIpAddressByValue(String ipAddress);
 }

@@ -8,9 +8,11 @@ import java.util.UUID;
 @Data
 public class ApiIpAddress {
 
+    private final UUID id;
     private final UUID ipPoolId;
     private final String value;
-    private final IpState ipState;
-    private final boolean dynamic;
+    private final IpState resourceState;
+    private Boolean dynamic;
+    private Integer quantity;
 
 }
