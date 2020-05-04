@@ -1,6 +1,8 @@
 package com.jg.gopractical.domain.model;
 
+import com.jg.gopractical.utils.IPUtils;
 import inet.ipaddr.IPAddress;
+import inet.ipaddr.ipv4.IPv4Address;
 import lombok.Data;
 import lombok.SneakyThrows;
 
@@ -8,6 +10,7 @@ import javax.persistence.*;
 import java.util.Set;
 import java.util.UUID;
 
+import static com.jg.gopractical.utils.IPUtils.fromString;
 import static javax.persistence.CascadeType.ALL;
 
 @Data
@@ -39,12 +42,12 @@ public class IpPool {
 
     @SneakyThrows
     public void setLowerBound(final String lowerBound) {
-        this.lowerBound = IPAddress.from(lowerBound.getBytes());
+        this.lowerBound = fromString(lowerBound);
     }
 
     @SneakyThrows
     public void setUpperBound(final String upperBound) {
-        this.upperBound = IPAddress.from(upperBound.getBytes());
+        this.upperBound = fromString(upperBound);
     }
 
 

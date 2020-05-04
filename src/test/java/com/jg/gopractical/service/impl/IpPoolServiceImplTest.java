@@ -20,7 +20,7 @@ public class IpPoolServiceImplTest {
     private IpPoolRepository ipPoolRepository;
 
     @InjectMocks
-    private IpPoolService ipPoolService;
+    private IpPoolServiceImpl ipPoolService;
 
     final IpPool ipPool = new IpPool();
 

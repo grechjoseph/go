@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.util.UUID;
 
+import static com.jg.gopractical.utils.IPUtils.fromString;
 import static javax.persistence.FetchType.LAZY;
 
 @Data
@@ -31,7 +32,7 @@ public class IpAddress {
 
     @SneakyThrows
     public void setValue(final String value) {
-        this.value = IPAddress.from(value.getBytes());
+        this.value = fromString(value);
     }
 
 }
