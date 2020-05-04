@@ -1,5 +1,6 @@
 package com.jg.gopractical.api.controller;
 
+import com.jg.gopractical.api.dto.ApiBatchInfo;
 import com.jg.gopractical.api.dto.ApiIpAddress;
 import com.jg.gopractical.domain.model.IpAddress;
 import com.jg.gopractical.mapper.ModelMapper;
@@ -22,8 +23,8 @@ public class IpAddressController {
 
     @PostMapping("/ip-addresses")
     @ApiOperation(value = "Reserve a number of dynamic IPs from the Dynamic IPs pool.")
-    public List<ApiIpAddress> reserveDynamicIpAddress(@RequestParam final Integer quantity) {
-        return mapper.mapAsList(ipAddressService.reserveDynamicIpAddress(quantity), ApiIpAddress.class);
+    public List<ApiIpAddress> reserveDynamicIpAddress(@RequestBody final ApiBatchInfo batchInfo) {
+        return mapper.mapAsList(ipAddressService.reserveDynamicIpAddress(batchInfo.getQuantity()), ApiIpAddress.class);
     }
 
     @PostMapping("ip-pools/{poolId}/ip-addresses")
@@ -36,8 +37,8 @@ public class IpAddressController {
 
     @GetMapping("/ip-addresses")
     @ApiOperation(value = "Get an IP resource by its address.")
-    public ApiIpAddress getIpAddress(@RequestParam final String ipAddress) {
-        return mapper.map(ipAddressService.getIpAddressByValue(ipAddress), ApiIpAddress.class);
+    public ApiIpAddress getIpAddress(@RequestBody final ApiIpAddress ipAddress) {
+        return mapper.map(ipAddressService.getIpAddressByValue(ipAddress.getValue()), ApiIpAddress.class);
     }
 
     @GetMapping("/ip-addresses/{addressId}")
@@ -48,14 +49,14 @@ public class IpAddressController {
 
     @DeleteMapping("/ip-pools/{poolId}/ip-addresses")
     @ApiOperation(value = "Blacklist an IP Address.")
-    public ApiIpAddress blacklistIpAddress(@PathVariable final UUID poolId, @RequestParam final String ipAddress) {
-        return mapper.map(ipAddressService.blacklistIpAddress(poolId, ipAddress), ApiIpAddress.class);
+    public ApiIpAddress blacklistIpAddress(@PathVariable final UUID poolId, @RequestBody final ApiIpAddress ipAddress) {
+        return mapper.map(ipAddressService.blacklistIpAddress(poolId, ipAddress.getValue()), ApiIpAddress.class);
     }
 
     @PatchMapping("/ip-pools/{poolId}")
     @ApiOperation(value = "Free an IP Address from a pool.")
-    public void freeIpAddress(@PathVariable final UUID poolId, @RequestParam final String ipAddress) {
-        ipAddressService.freeIpAddress(poolId, ipAddress);
+    public void freeIpAddress(@PathVariable final UUID poolId, @RequestBody final ApiIpAddress ipAddress) {
+        ipAddressService.freeIpAddress(poolId, ipAddress.getValue());
     }
 
 }
