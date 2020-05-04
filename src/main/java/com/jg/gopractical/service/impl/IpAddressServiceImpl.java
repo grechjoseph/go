@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+import static com.jg.gopractical.domain.enums.IpState.*;
+
 @Service
 @RequiredArgsConstructor
 public class IpAddressServiceImpl implements IpAddressService {
@@ -28,31 +30,31 @@ public class IpAddressServiceImpl implements IpAddressService {
 
     @Override
     public IpAddress reserveIpAddress(final IpAddress ipAddress) {
-
-        return null;
+        return transitState(ipAddress, RESERVED);
     }
 
     @Override
     public IpAddress blacklistIpAddress(final UUID ipAddressId) {
-        return null;
+        final IpAddress ipAddress = getIpAddressById(ipAddressId);
+        return transitState(ipAddress, BLACKLISTED);
     }
 
     @Override
     public IpAddress blacklistIpAddress(final IpAddress ipAddress) {
-        return null;
+        return transitState(ipAddress, BLACKLISTED);
     }
 
     @Override
-    public IpAddress freeIpAddress(final UUID ipAddressId) {
-        return null;
+    public void freeIpAddress(final UUID ipAddressId) {
+        final IpAddress ipAddress = getIpAddressById(ipAddressId);
+        ipAddressRepository.delete(ipAddress);
     }
 
-    /*private IpAddress transitState(final String ipAddress, final IpState newState) {
-        final IpAddress ipAddress = getIpAddressById(ipAddressId);
+    private IpAddress transitState(final IpAddress ipAddress, final IpState newState) {
         validateStateTransition(ipAddress, newState);
         ipAddress.setResourceState(newState);
         return ipAddressRepository.save(ipAddress);
-    }*/
+    }
 
     private void validateStateTransition(final IpAddress ipAddress, final IpState newState) {
         if(!ipAddress.getResourceState().getNextSteps().contains(newState)) {

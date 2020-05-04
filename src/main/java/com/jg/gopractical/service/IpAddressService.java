@@ -17,6 +17,6 @@ public interface IpAddressService {
 
     IpAddress blacklistIpAddress(final IpAddress ipAddress);
 
-    IpAddress freeIpAddress(final UUID ipAddressId);
+    void freeIpAddress(final UUID ipAddressId);
 
 }

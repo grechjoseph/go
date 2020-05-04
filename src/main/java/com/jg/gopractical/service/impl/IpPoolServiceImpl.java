@@ -20,21 +20,24 @@ public class IpPoolServiceImpl implements IpPoolService {
 
     @Override
     public IpPool getIpPoolById(final UUID ipPoolId) {
-        return null;
+        return ipPoolRepository.findById(ipPoolId).orElseThrow(() -> new RuntimeException("IP Pool not found."));
     }
 
     @Override
     public List<IpPool> getIpPools() {
-        return null;
+        return ipPoolRepository.findAll();
     }
 
     @Override
     public IpPool updateIpPool(final UUID ipPoolId, final IpPool newValues) {
-        return null;
+        final IpPool ipPool = getIpPoolById(ipPoolId);
+        newValues.setId(ipPoolId);
+        newValues.setIpAddresses(ipPool.getIpAddresses());
+        return ipPoolRepository.save(newValues);
     }
 
     @Override
     public void deleteIpPool(final UUID ipPoolId) {
-
+        ipPoolRepository.delete(getIpPoolById(ipPoolId));
     }
 }

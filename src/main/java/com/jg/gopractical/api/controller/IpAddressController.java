@@ -44,8 +44,10 @@ public class IpAddressController {
         return mapper.map(ipAddressService.blacklistIpAddress(addressIp), ApiIpAddressExtended.class);
     }
 
-    //@PatchMapping("/")
-
+    @PatchMapping("/{addressId}")
+    public void freeIpAddress(@PathVariable final UUID addressId) {
+        ipAddressService.freeIpAddress(addressId);
+    }
 
 
 }
