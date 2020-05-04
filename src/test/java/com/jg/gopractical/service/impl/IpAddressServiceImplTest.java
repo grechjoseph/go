@@ -140,7 +140,17 @@ public class IpAddressServiceImplTest {
         ipAddressObj.setResourceState(RESERVED);
         when(mockIpAddressRepository.findByValue(any(String.class))).thenReturn(Optional.of(ipAddressObj));
         assertThatThrownBy(() -> ipAddressService.blacklistIpAddress(IP_ADDRESS_OBJ))
-            .isEqualTo(new BaseException(IP_ADDRESS_IN_USE));
+                .isEqualTo(new BaseException(IP_ADDRESS_IN_USE));
+        verify(mockIpAddressRepository, never()).save(any(IpAddress.class));
+    }
+
+    @Test
+    public void blacklistIpAddress_ipAlreadyBlacklisted_shouldThrowIpIsBlacklistedException() {
+        final IpAddress ipAddressObj = new IpAddress();
+        ipAddressObj.setResourceState(BLACKLISTED);
+        when(mockIpAddressRepository.findByValue(any(String.class))).thenReturn(Optional.of(ipAddressObj));
+        assertThatThrownBy(() -> ipAddressService.blacklistIpAddress(IP_ADDRESS_OBJ))
+                .isEqualTo(new BaseException(IP_ADDRESS_BLACKLISTED));
         verify(mockIpAddressRepository, never()).save(any(IpAddress.class));
     }
 
